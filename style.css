@@ -811,21 +811,27 @@ input[type=number] {
     .container { 
         grid-template-columns: 1fr; 
     } 
-    /* Forces the hamburger button to the top left permanently */
+    /* Hard-locks the hamburger icon to the top left viewport view */
     .global-menu-btn { 
         top: 20px !important; 
-        bottom: auto !important; 
+        bottom: unset !important; 
         left: 20px !important; 
+        position: fixed !important;
     }
-    /* Safeguards the drawer content from being blocked by phone nav bars */
+    /* Expands sidebar scroll parameters and gives a clean bottom spacing safety buffer */
     .char-drawer {
         height: 100dvh !important;
-        padding-bottom: 90px !important; 
+        padding-bottom: 40px !important; 
         overflow-y: auto !important;
     }
-    /* Stops the theme dropdown from forcing itself into the blocked screen zone */
+    /* Eliminates nested mobile scrolling conflicts so the entire pane glides together */
+    .char-list {
+        max-height: unset !important;
+        overflow: visible !important;
+    }
+    /* Resets the theme drawer attachment rules to prevent clipping under browser navigation bars */
     .theme-container {
-        margin-top: 30px !important;
+        margin-top: 24px !important;
     }
 }
 
