@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mike's Character Card</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button id="menu-btn" class="global-menu-btn" onclick="toggleCharDrawer()">☰</button>
+
+    <div id="char-drawer" class="char-drawer">
+        <div class="drawer-header">
+            <h4>Character Cards</h4>
+            <button class="close-drawer-btn" onclick="toggleCharDrawer()">✕</button>
+        </div>
+        <div id="char-list" class="char-list"></div>
+        <button class="add-btn create-btn" onclick="openCharPrompt()">+ New Character</button>
+        
+
+        <div class="backup-divider"></div>
+        <h4>Data Backup Controls</h4>
+        <div class="backup-row-btns">
+            <button class="add-btn backup-btn" onclick="exportCharacterData()">Export Data</button>
+            <label class="add-btn backup-btn import-label">
+                Import Data
+                <input type="file" id="import-input" accept=".json" onchange="importCharacterData(this)" style="display: none;">
+            </label>
+        </div>
+        <div class="theme-container" style="margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--border-color);">
+            <h4 class="no-select">UI Theme</h4>
+            <div class="theme-dropdown" id="theme-dropdown">
+                <div class="theme-toggle no-select" onclick="toggleThemeDropdown()">Default Dark</div>
+                <div class="theme-menu">
+                    <div class="theme-item no-select" onclick="selectTheme('default', 'Default Dark')">Default Dark</div>
+                    <div class="theme-item no-select" onclick="selectTheme('cyber', 'Cyber Futuristic')">Cyber Futuristic</div>
+                    <div class="theme-item no-select" onclick="selectTheme('proxy', 'Proxy Terminal')">Proxy Terminal</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1 class="page-headline no-select">Character Sheet: <span id="header-name">Mike</span></h1>
+    
+    <div class="container">
+        <div class="column left-col">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="no-select">Profile</h3>
+                    <div class="main-lvl no-select">
+                        Lvl <input type="number" id="char-level" data-save="true" placeholder="1">
+                    </div>
+                </div>
+                <label class="image-upload no-select">
+                    <span id="upload-text">Click to Upload Image</span>
+                    <img id="char-image" src="" alt="Character">
+                    <input type="file" id="image-input" accept="image/*" style="display: none;">
+                </label>
+                <div class="input-group">
+                    <label class="no-select">Name</label><input type="text" id="name" data-save="true">
+                </div>
+                <div class="input-group">
+                    <label class="no-select">Family</label><input type="text" id="family-name" data-save="true">
+                </div>
+                <div class="input-group">
+                    <label class="no-select">Age</label><input type="number" id="age" data-save="true">
+                </div>
+                
+                <div class="collapsible no-select" onclick="toggleDetails()">Lore & Details <span id="arrow-icon">▼</span></div>
+                <div id="profile-details">
+                    <label class="textarea-label no-select">Appearance</label>
+                    <textarea id="appearance" data-save="true"></textarea>
+                    
+                    <label class="textarea-label no-select">Personality</label>
+                    <textarea id="personality" data-save="true"></textarea>
+                    
+                    <label class="textarea-label no-select">Backstory</label>
+                    <textarea id="backstory" data-save="true"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="column right-col">
+            <div class="card vitals-card">
+                <div class="card-header">
+                    <h3 class="no-select">Combat Status</h3>
+                    <div class="main-lvl no-select">
+                        Pts <input type="number" id="stat-points" data-save="true" placeholder="0">
+                    </div>
+                </div>
+                
+                <div class="rest-btn-container no-select">
+                    <button class="rest-btn short-rest" onclick="shortRest()">Short Rest</button>
+                    <button class="rest-btn long-rest" onclick="longRest()">Long Rest</button>
+                </div>
+                
+                <div class="vitals-grid">
+                    <div class="vital-box hp-box">
+                        <div class="vital-header no-select">
+                            <span class="vital-title" style="color: var(--hp-color);">HP</span>
+                            <div class="vital-meta">
+                                <label>Base <input type="number" id="hp-base" data-save="true" class="tiny-input"></label>
+                                <label>Reg <input type="number" id="hp-regen" data-save="true" class="tiny-input" readonly></label>
+                            </div>
+                        </div>
+                        <div class="split-input">
+                            <input type="number" id="hp-current" data-save="true">
+                            <span class="divider">/</span>
+                            <input type="number" id="hp-max" data-save="true" readonly>
+                        </div>
+                        <div class="soul-section">
+                            <span class="soul-title no-select">SOUL HP</span>
+                            <div class="split-input">
+                                <input type="number" id="soul-hp-current" data-save="true">
+                                <span class="divider">/</span>
+                                <input type="number" id="soul-hp-max" data-save="true">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vital-box mana-box">
+                        <div class="vital-header no-select">
+                            <span class="vital-title" style="color: var(--mana-color);">MANA</span>
+                            <div class="vital-meta">
+                                <label>Base <input type="number" id="mana-base" data-save="true" class="tiny-input"></label>
+                                <label>Reg <input type="number" id="mana-regen" data-save="true" class="tiny-input" readonly></label>
+                            </div>
+                        </div>
+                        <div class="split-input">
+                            <input type="number" id="mana-current" data-save="true">
+                            <span class="divider">/</span>
+                            <input type="number" id="mana-max" data-save="true" readonly>
+                        </div>
+                    </div>
+
+                    <div class="vital-box insanity-box">
+                        <div class="vital-header no-select">
+                            <span class="vital-title" style="color: var(--insanity-color);">INSANITY</span>
+                            <div class="vital-meta">
+                                <label>Base <input type="number" id="insanity-base" data-save="true" class="tiny-input"></label>
+                                <label>Reg <input type="number" id="insanity-regen" data-save="true" class="tiny-input" readonly></label>
+                            </div>
+                        </div>
+                        <div class="split-input">
+                            <input type="number" id="insanity-current" data-save="true">
+                            <span class="divider">/</span>
+                            <input type="number" id="insanity-max" data-save="true" readonly>
+                        </div>
+                    </div>
+
+                    <div class="vital-box readiness-box">
+                        <div class="vital-header no-select">
+                            <span class="vital-title" style="color: var(--accent);">SPEED</span>
+                        </div>
+                        <div class="readiness-inputs">
+                            <div class="readiness-row">
+                                <label class="no-select">Initiative</label>
+                                <input type="text" id="vital-initiative" readonly>
+                            </div>
+                            <div class="readiness-row">
+                                <label class="no-select">Action Pts</label>
+                                <input type="text" id="vital-ap" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabs no-select">
+                <div class="tab active" data-target="tab-stats">Stats</div>
+                <div class="tab" data-target="tab-weapon">Weapon</div>
+                <div class="tab" data-target="tab-inventory">Inventory</div>
+                <div class="tab" data-target="tab-equipment">Equipment</div>
+                <div class="tab" data-target="tab-spells">Magic Spells</div>
+                <div class="tab" data-target="tab-skills">Skills</div>
+                <div class="tab" data-target="tab-nerd">Nerd</div>
+            </div>
+
+            <div id="tab-stats" class="tab-content active stat-grid"></div>
+
+            <div id="tab-weapon" class="tab-content card">
+                <div class="card-header">
+                    <h3 class="no-select">Weapon Properties</h3>
+                </div>
+                <div class="equipment-grid">
+                    <div class="input-group"><label class="no-select">Phys Weapon Dmg</label><input type="number" id="wpn-phys-base" data-save="true" value="10"></div>
+                    <div class="input-group"><label class="no-select">Mag Weapon Dmg</label><input type="number" id="wpn-mag-base" data-save="true" value="0"></div>
+                    <div class="input-group"><label class="no-select">Soul Weapon Dmg</label><input type="number" id="wpn-soul-base" data-save="true" value="0"></div>
+                    <div class="input-group"><label class="no-select">Extra Flat Physical</label><input type="number" id="wpn-flat-phys" data-save="true" value="0"></div>
+                    <div class="input-group"><label class="no-select">Extra Flat Magic</label><input type="number" id="wpn-flat-mag" data-save="true" value="0"></div>
+                    <div class="input-group"><label class="no-select">Extra Flat Soul</label><input type="number" id="wpn-flat-soul" data-save="true" value="0"></div>
+                    <div class="input-group"><label class="no-select">Extra % Physical</label><input type="number" id="wpn-pct-phys" data-save="true" value="0"></div>
+                    <div class="input-group"><label class="no-select">Extra % Magic</label><input type="number" id="wpn-pct-mag" data-save="true" value="0"></div>
+                    <div class="input-group"><label class="no-select">Extra % Soul</label><input type="number" id="wpn-pct-soul" data-save="true" value="0"></div>
+                </div>
+            </div>
+            
+            <div id="tab-inventory" class="tab-content card">
+                <div class="card-header">
+                    <h3 class="no-select">Inventory List</h3>
+                    <button class="add-btn no-select" onclick="addInventoryItem()">+ Add Item</button>
+                </div>
+                <div id="inventory-list" class="ability-list"></div>
+            </div>
+            
+            <div id="tab-equipment" class="tab-content card">
+                <div class="card-header">
+                    <h3 class="no-select">Equipment Slots</h3>
+                </div>
+                <div class="equipment-grid">
+                    <div class="input-group"><label class="no-select">Head</label><input type="text" id="eq-head" data-save="true" placeholder="Empty"></div>
+                    <div class="input-group"><label class="no-select">Armor / Torso</label><input type="text" id="eq-body" data-save="true" placeholder="Empty"></div>
+                    <div class="input-group"><label class="no-select">Hands</label><input type="text" id="eq-hands" data-save="true" placeholder="Empty"></div>
+                    <div class="input-group"><label class="no-select">Feet</label><input type="text" id="eq-feet" data-save="true" placeholder="Empty"></div>
+                    <div class="input-group"><label class="no-select">Main Weapon</label><input type="text" id="eq-weapon" data-save="true" placeholder="Empty"></div>
+                    <div class="input-group"><label class="no-select">Accessory</label><input type="text" id="eq-acc" data-save="true" placeholder="Empty"></div>
+                </div>
+            </div>
+            
+            <div id="tab-spells" class="tab-content card">
+                <div class="card-header">
+                    <h3 class="no-select">Magic Spells</h3>
+                    <button class="add-btn no-select" onclick="addAbility('spells')">+ Add Spell</button>
+                </div>
+                <div id="spells-list" class="ability-list"></div>
+            </div>
+            
+            <div id="tab-skills" class="tab-content card">
+                <div class="card-header">
+                    <h3 class="no-select">Active & Passive Skills</h3>
+                    <button class="add-btn no-select" onclick="addAbility('skills')">+ Add Skill</button>
+                </div>
+                <div id="skills-list" class="ability-list"></div>
+            </div>
+
+            <div id="tab-nerd" class="tab-content card">
+                <div class="card-header">
+                    <h3 class="no-select">Deep Advanced Analytics</h3>
+                </div>
+                <div class="equipment-grid" id="nerd-grid" style="font-size: 13px; gap: 15px; line-height: 1.6; color: var(--text-muted);"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-dialog" class="dialog-overlay">
+        <div class="dialog-content">
+            <h4 id="dialog-title" class="no-select">System Request</h4>
+            <p id="dialog-text">Message goes here...</p>
+            <input type="text" id="dialog-input" placeholder="Type input here...">
+            <div class="dialog-actions no-select">
+                <button id="dialog-cancel-btn" class="add-btn cancel-style">Cancel</button>
+                <button id="dialog-confirm-btn" class="add-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <button id="dice-btn" class="dice-fab no-select">🎲</button>
+    <div id="dice-modal" class="dice-modal">
+        <div class="dice-content">
+            <span id="dice-result" class="no-select">20</span>
+            <div id="dice-text" class="no-select">Critical Success!</div>
+        </div>
+    </div>
+    
+    <div class="card dm-check-card" style="margin-top: 20px; max-width: 1200px; margin-left: auto; margin-right: auto;">
+        <div class="card-header">
+            <h3 class="no-select">DM Calculation Check</h3>
+        </div>
+        <div id="dm-check-details" style="font-size: 13px; color: var(--text-muted); display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; line-height: 1.6;"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
