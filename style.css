@@ -811,11 +811,21 @@ input[type=number] {
     .container { 
         grid-template-columns: 1fr; 
     } 
-    /* Fixes the button position on mobile */
+    /* Forces the hamburger button to the top left permanently */
     .global-menu-btn { 
-        top: 20px; 
-        bottom: auto; 
-        left: 20px; 
+        top: 20px !important; 
+        bottom: auto !important; 
+        left: 20px !important; 
+    }
+    /* Safeguards the drawer content from being blocked by phone nav bars */
+    .char-drawer {
+        height: 100dvh !important;
+        padding-bottom: 90px !important; 
+        overflow-y: auto !important;
+    }
+    /* Stops the theme dropdown from forcing itself into the blocked screen zone */
+    .theme-container {
+        margin-top: 30px !important;
     }
 }
 
