@@ -99,8 +99,8 @@
                         <div class="vital-header no-select">
                             <span class="vital-title" style="color: var(--hp-color);">HP</span>
                             <div class="vital-meta">
-                                <label>Base <input type="number" id="hp-base" data-save="true" class="tiny-input"></label>
-                                <label>Reg <input type="number" id="hp-regen" data-save="true" class="tiny-input" readonly></label>
+                                <label>Base <input type="number" id="hp-base" data-save="true" class="tiny-input" value="100"></label>
+                                <label>Reg <input type="number" id="hp-regen-base" data-save="true" class="tiny-input" value="5.0"></label>
                             </div>
                         </div>
                         <div class="split-input">
@@ -108,13 +108,28 @@
                             <span class="divider">/</span>
                             <input type="number" id="hp-max" data-save="true" readonly>
                         </div>
-                        <div class="soul-section">
-                            <span class="soul-title no-select">SOUL HP</span>
-                            <div class="split-input">
-                                <input type="number" id="soul-hp-current" data-save="true">
-                                <span class="divider">/</span>
-                                <input type="number" id="soul-hp-max" data-save="true">
+                        <div class="readiness-row" style="margin-top: 5px; font-size: 11px;">
+                            <label>Final Regen:</label>
+                            <input type="text" id="hp-regen" readonly class="tiny-input" style="color: var(--hp-color); border: none; font-weight: bold;">
+                        </div>
+                    </div>
+
+                    <div class="vital-box" style="border-top: 3px solid #00f5ff;">
+                        <div class="vital-header no-select">
+                            <span class="vital-title" style="color: #00f5ff;">SOUL HP</span>
+                            <div class="vital-meta">
+                                <label>Base <input type="number" id="soul-hp-base" data-save="true" class="tiny-input" value="10"></label>
+                                <label>Reg <input type="number" id="soul-regen-base" data-save="true" class="tiny-input" value="1.0"></label>
                             </div>
+                        </div>
+                        <div class="split-input">
+                            <input type="number" id="soul-hp-current" data-save="true">
+                            <span class="divider">/</span>
+                            <input type="number" id="soul-hp-max" data-save="true" readonly>
+                        </div>
+                        <div class="readiness-row" style="margin-top: 5px; font-size: 11px;">
+                            <label>Final Regen:</label>
+                            <input type="text" id="soul-hp-regen" readonly class="tiny-input" style="color: #00f5ff; border: none; font-weight: bold;">
                         </div>
                     </div>
 
@@ -122,8 +137,8 @@
                         <div class="vital-header no-select">
                             <span class="vital-title" style="color: var(--mana-color);">MANA</span>
                             <div class="vital-meta">
-                                <label>Base <input type="number" id="mana-base" data-save="true" class="tiny-input"></label>
-                                <label>Reg <input type="number" id="mana-regen" data-save="true" class="tiny-input" readonly></label>
+                                <label>Base <input type="number" id="mana-base" data-save="true" class="tiny-input" value="50"></label>
+                                <label>Reg <input type="number" id="mana-regen-base" data-save="true" class="tiny-input" value="2.0"></label>
                             </div>
                         </div>
                         <div class="split-input">
@@ -131,20 +146,28 @@
                             <span class="divider">/</span>
                             <input type="number" id="mana-max" data-save="true" readonly>
                         </div>
+                        <div class="readiness-row" style="margin-top: 5px; font-size: 11px;">
+                            <label>Final Regen:</label>
+                            <input type="text" id="mana-regen" readonly class="tiny-input" style="color: var(--mana-color); border: none; font-weight: bold;">
+                        </div>
                     </div>
 
                     <div class="vital-box insanity-box">
                         <div class="vital-header no-select">
                             <span class="vital-title" style="color: var(--insanity-color);">INSANITY</span>
                             <div class="vital-meta">
-                                <label>Base <input type="number" id="insanity-base" data-save="true" class="tiny-input"></label>
-                                <label>Reg <input type="number" id="insanity-regen" data-save="true" class="tiny-input" readonly></label>
+                                <label>Base <input type="number" id="insanity-base" data-save="true" class="tiny-input" value="50"></label>
+                                <label>Reg <input type="number" id="insanity-regen-base" data-save="true" class="tiny-input" value="1.0"></label>
                             </div>
                         </div>
                         <div class="split-input">
                             <input type="number" id="insanity-current" data-save="true">
                             <span class="divider">/</span>
                             <input type="number" id="insanity-max" data-save="true" readonly>
+                        </div>
+                        <div class="readiness-row" style="margin-top: 5px; font-size: 11px;">
+                            <label>Final Regen:</label>
+                            <input type="text" id="insanity-regen" readonly class="tiny-input" style="color: var(--insanity-color); border: none; font-weight: bold;">
                         </div>
                     </div>
 

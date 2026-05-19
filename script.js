@@ -20,6 +20,37 @@ const defaultMikeData = {
     "performance-lvl": "5", "performance-intellectual": "5", "performance-wisdom": "20"
 };
 
+const statDescriptions = {
+    "Physical-STR": "Physical Power\n+1 Physical Damage per point. Affects lifting and throwing.",
+    "Physical-Health": "Vitality & Immunity\n+1% to all HP/Stamina regen per point. +1 Disease Resistance.",
+    "Physical-Endurance": "Toughness & Stamina\n+1 Max HP/Stamina per point. +1 Immobilize Resistance. +0.25% Damage Reduction.",
+    "Physical-Speed": "Mobility & Reactions\nEvery 5 points grants +1 Initiative and +1 Action Point.",
+    
+    "Magic-Control": "Spell Mastery\n+1 Magic Damage per point. Every 5 points reduces spell casting mana cost by 1.",
+    "Magic-Endurance": "Arcane Shielding\n-1 Magic Damage received per point. +1 Magic Status Resistance. +1% Mana Recovery.",
+    "Magic-Capacity": "Mana Reserves\n+1 Max Mana per point. Every 5 points grants +1 Resistance to Skill Locking.",
+    "Magic-Cast Speed": "Casting Efficiency\nEvery 5 points reduces spell casting time by 1 turn.",
+    
+    "Charisma-Body": "Physical Appeal\nImproves your appearance. Highly recommended for seducing dragons.",
+    "Charisma-Speech": "Silver Tongue\nImproves your speech level, making persuasion much easier.",
+    
+    "Soul-STR": "Spiritual Power\n+1 Soul Damage per point.",
+    "Soul-Health": "Spiritual Vitality\n+1% Soul Regen per point. +1 Resistance to Soul-based status effects.",
+    "Soul-Endurance": "Spiritual Toughness\n+1 Max HP/Stamina per point. +1 Immobilize Resistance. +0.25% Damage Reduction.",
+    "Soul-Enchantments": "Permanent Marks\nGained through roleplay choices. Irreversible enchantments that fit your character.",
+    
+    "Performance-Intellectual": "Mental Adaptability\n+1% Skill EXP, +1% Weapon Damage, +1% Weapon Mastery, and +1% Skill Damage per point.",
+    "Performance-Wisdom": "Craftsmanship & Memory\n+1% Crafting Mastery per point. Reduces required crafting time.",
+    "Performance-Insanity": "Mental Fortitude\n+1 Max Insanity and +1% Insanity Recovery per point. Every 10 points = -1 incoming Insanity.",
+    "Performance-Magic": "Arcane Precision\n+1 Hit Check Roll and +1 Magical Performance Roll per point.",
+    "Performance-Physical": "Combat Precision\n+1 Hit Check Roll and +1 Physical Performance Roll per point.",
+    
+    "Instinct-Physical": "Physical Intuition\n+1 Dice Roll on Physical checks per point.",
+    "Instinct-Magical": "Arcane Intuition\n+1 Dice Roll on Magical checks per point.",
+    "Instinct-Soul": "Spiritual Intuition\n+1 Dice Roll on Soul checks per point.",
+    "Instinct-Charisma": "Social Intuition\n+1 Dice Roll on Charisma checks per point."
+};
+
 const statContainer = document.getElementById('tab-stats');
 let charList = JSON.parse(localStorage.getItem('dnd_char_list_v4')) || ['Mike'];
 let prefix = "dnd_char_v4_" + (localStorage.getItem('dnd_active_char_v4') || 'Mike') + "_";
@@ -38,6 +69,7 @@ function toggleDetails() {
 }
 
 // Generate Stat Cards Dynamically
+statContainer.innerHTML = ''; 
 for (const [branch, subStats] of Object.entries(statsData)) {
     const safeBranchId = branch.toLowerCase();
     let cardHtml = `
@@ -52,12 +84,16 @@ for (const [branch, subStats] of Object.entries(statsData)) {
     subStats.forEach(sub => {
         const safeId = `${branch}-${sub}`.replace(/\s+/g, '-').toLowerCase();
         const inputType = sub === "Enchantments" ? "text" : "number";
+        const lookupKey = `${branch}-${sub}`;
+        const tooltip = statDescriptions[lookupKey] || "";
+        
         cardHtml += `
-            <div class="input-group">
+            <div class="input-group" data-tooltip="${tooltip}">
                 <label class="no-select">${sub}</label>
                 <input type="${inputType}" id="${safeId}" data-save="true">
             </div>`;
     });
+    
     cardHtml += `</div>`;
     statContainer.innerHTML += cardHtml;
 }
@@ -71,10 +107,13 @@ nameInput.addEventListener('input', (e) => {
 
 // --- Advanced Math Calculation Scaling Engine ---
 function calculateDynamicStats() {
+    // 1. Base Pools & Modifiers Checklist
     const hpBase = parseInt(document.getElementById('hp-base')?.value) || 100;
+    const soulHpBase = parseInt(document.getElementById('soul-hp-base')?.value) || 10;
     const manaBase = parseInt(document.getElementById('mana-base')?.value) || 50;
     const insanityBase = parseInt(document.getElementById('insanity-base')?.value) || 50;
 
+    // Sub-stats hooks
     const physStr = parseInt(document.getElementById('physical-str')?.value) || 0;
     const physHealth = parseInt(document.getElementById('physical-health')?.value) || 0;
     const physEnd = parseInt(document.getElementById('physical-endurance')?.value) || 0;
@@ -100,6 +139,7 @@ function calculateDynamicStats() {
     const instSoul = parseInt(document.getElementById('instinct-soul')?.value) || 0;
     const instChar = parseInt(document.getElementById('instinct-charisma')?.value) || 0;
 
+    // Weapon Properties Extraction
     const wpnPhysBase = parseInt(document.getElementById('wpn-phys-base')?.value) || 0;
     const wpnMagBase = parseInt(document.getElementById('wpn-mag-base')?.value) || 0;
     const wpnSoulBase = parseInt(document.getElementById('wpn-soul-base')?.value) || 0;
@@ -110,6 +150,7 @@ function calculateDynamicStats() {
     const wpnPctMag = parseInt(document.getElementById('wpn-pct-mag')?.value) || 0;
     const wpnPctSoul = parseInt(document.getElementById('wpn-pct-soul')?.value) || 0;
 
+    // 2. Modifiers Array
     let flatModifiers = { 'hp-max': 0, 'mana-max': 0, 'insanity-max': 0 };
     let pctModifiers = { 'hp-max': 0, 'mana-max': 0, 'insanity-max': 0 };
 
@@ -123,7 +164,9 @@ function calculateDynamicStats() {
         }
     });
 
+    // 3. Maximum Value Calculations
     const baseHpMax = hpBase + physEnd + soulEnd;
+    const baseSoulHpMax = soulHpBase; 
     const baseManaMax = manaBase + magCap;
     const baseInsanityMax = insanityBase + perfInsan;
 
@@ -131,21 +174,29 @@ function calculateDynamicStats() {
     const finalManaMax = Math.floor((baseManaMax + flatModifiers['mana-max']) * (1 + pctModifiers['mana-max'] / 100));
     const finalInsanityMax = Math.floor((baseInsanityMax + flatModifiers['insanity-max']) * (1 + pctModifiers['insanity-max'] / 100));
 
-    const hpRegenVal = (5 * (1 + physHealth / 100)).toFixed(2);
-    const manaRegenVal = (2 * (1 + magEnd / 100)).toFixed(2);
-    const insanityRegenVal = (1 * (1 + perfInsan / 100)).toFixed(2);
+    // 4. Dynamic Scaled Regeneration Calculations
+    const hpRegenBase = parseFloat(document.getElementById('hp-regen-base')?.value) || 5.0;
+    const soulRegenBase = parseFloat(document.getElementById('soul-regen-base')?.value) || 1.0;
+    const manaRegenBase = parseFloat(document.getElementById('mana-regen-base')?.value) || 2.0;
+    const insanityRegenBase = parseFloat(document.getElementById('insanity-regen-base')?.value) || 1.0;
 
-    if(document.getElementById('hp-base') && !document.getElementById('hp-base').value) document.getElementById('hp-base').value = hpBase;
-    if(document.getElementById('mana-base') && !document.getElementById('mana-base').value) document.getElementById('mana-base').value = manaBase;
-    if(document.getElementById('insanity-base') && !document.getElementById('insanity-base').value) document.getElementById('insanity-base').value = insanityBase;
+    const hpRegenVal = (hpRegenBase * (1 + physHealth / 100)).toFixed(2);
+    const soulRegenVal = (soulRegenBase * (1 + soulHealth / 100)).toFixed(2);
+    const manaRegenVal = (manaRegenBase * (1 + magEnd / 100)).toFixed(2);
+    const insanityRegenVal = (insanityRegenBase * (1 + perfInsan / 100)).toFixed(2);
 
-    document.getElementById('hp-max').value = finalHpMax;
-    document.getElementById('mana-max').value = finalManaMax;
-    document.getElementById('insanity-max').value = finalInsanityMax;
-    document.getElementById('hp-regen').value = hpRegenVal;
-    document.getElementById('mana-regen').value = manaRegenVal;
-    document.getElementById('insanity-regen').value = insanityRegenVal;
+    // 5. Write Core Data to UI
+    if(document.getElementById('hp-max')) document.getElementById('hp-max').value = finalHpMax;
+    if(document.getElementById('soul-hp-max')) document.getElementById('soul-hp-max').value = baseSoulHpMax;
+    if(document.getElementById('mana-max')) document.getElementById('mana-max').value = finalManaMax;
+    if(document.getElementById('insanity-max')) document.getElementById('insanity-max').value = finalInsanityMax;
 
+    if(document.getElementById('hp-regen')) document.getElementById('hp-regen').value = hpRegenVal;
+    if(document.getElementById('soul-hp-regen')) document.getElementById('soul-hp-regen').value = soulRegenVal;
+    if(document.getElementById('mana-regen')) document.getElementById('mana-regen').value = manaRegenVal;
+    if(document.getElementById('insanity-regen')) document.getElementById('insanity-regen').value = insanityRegenVal;
+
+    // 6. Combat Breakpoints & Reductions
     const apBonus = Math.floor(physSpeed / 5);
     const manaDiscount = Math.floor(magControl / 5);
     const castDiscount = Math.floor(magCastSpeed / 5);
@@ -156,6 +207,7 @@ function calculateDynamicStats() {
     if(document.getElementById('vital-initiative')) document.getElementById('vital-initiative').value = `+${apBonus}`;
     if(document.getElementById('vital-ap')) document.getElementById('vital-ap').value = 1 + apBonus;
 
+    // 7. Ability & Spell Output Loop
     document.querySelectorAll('.ability-card').forEach(card => {
         const baseMana = parseInt(card.querySelector('.base-mana').value) || 0;
         const skillDmg = parseInt(card.querySelector('.base-dmg').value) || 0;
@@ -195,6 +247,7 @@ function calculateDynamicStats() {
         }
     });
 
+    // 8. Nerd Grid Analytics Updates
     const nerdGrid = document.getElementById('nerd-grid');
     if (nerdGrid) {
         nerdGrid.innerHTML = `
@@ -203,7 +256,7 @@ function calculateDynamicStats() {
                 HP Recovery = <strong>${hpRegenVal} per turn</strong> (+${physHealth}%)<br>
                 MP Recovery = <strong>${manaRegenVal} per turn</strong> (+${magEnd}%)<br>
                 Insanity Recovery = <strong>${insanityRegenVal} per turn</strong> (+${perfInsan}%)<br>
-                Soul Recovery = <strong> ${(1 * (1 + soulHealth / 100)).toFixed(2)} per turn</strong> (+${soulHealth}%)
+                Soul Recovery = <strong>${soulRegenVal} per turn</strong> (+${soulHealth}%)
             </div>
             <div>
                 <strong style="color: var(--accent)">ACTION & CASTING:</strong><br>
@@ -255,6 +308,7 @@ function calculateDynamicStats() {
         `;
     }
 
+    // 9. DM Check Grid Updates
     const dmCheck = document.getElementById('dm-check-details');
     if (dmCheck) {
         dmCheck.innerHTML = `
@@ -264,6 +318,11 @@ function calculateDynamicStats() {
                 Final Max HP: ${finalHpMax} | Regen: <strong>${hpRegenVal}/turn</strong><br>
                 Physical DR: <strong>-${totalPhysDR}%</strong><br>
                 Magic Mitigation: <strong>-${magEnd} flat damage</strong>
+            </div>
+            <div>
+                <strong style="color:#00f5ff">Soul Resilience:</strong><br>
+                Base (${soulHpBase}) = ${baseSoulHpMax} Baseline<br>
+                Final Max Soul HP: ${baseSoulHpMax} | Regen: <strong>${soulRegenVal}/turn</strong>
             </div>
             <div>
                 <strong style="color:var(--mana-color)">Mana & Spell Discounts:</strong><br>
@@ -785,3 +844,30 @@ function shortRest() {
     
     showCustomDialog({ title: 'Short Rest Complete', text: 'You take a quick breather and restore 25% of your max HP and Mana.', showInput: false });
 }
+
+// Dynamic Mouse-Tracking Tooltip Engine
+const tooltip = document.createElement('div');
+tooltip.className = 'custom-tooltip';
+document.body.appendChild(tooltip);
+
+document.addEventListener('mouseover', (e) => {
+    const target = e.target.closest('.input-group[data-tooltip]');
+    if (target && target.getAttribute('data-tooltip') !== "") {
+        tooltip.textContent = target.getAttribute('data-tooltip');
+        tooltip.classList.add('show');
+    }
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (tooltip.classList.contains('show')) {
+        tooltip.style.left = e.pageX + 'px';
+        tooltip.style.top = (e.pageY - 15) + 'px'; // 15px buffer above mouse
+    }
+});
+
+document.addEventListener('mouseout', (e) => {
+    const target = e.target.closest('.input-group[data-tooltip]');
+    if (target) {
+        tooltip.classList.remove('show');
+    }
+});

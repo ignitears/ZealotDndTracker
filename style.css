@@ -976,3 +976,28 @@ body.theme-proxy .dice-fab {
     background: rgba(239, 83, 80, 0.05);
     transform: translateY(-2px);
 }
+
+/* Custom Mouse-Tracking Tooltip */
+.custom-tooltip {
+    position: absolute;
+    background: var(--card-bg);
+    border: 1px solid var(--accent);
+    color: var(--text-main);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    line-height: 1.4;
+    width: 180px;
+    text-align: center;
+    z-index: 9999; 
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -100%); 
+    transition: opacity 0.1s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    white-space: pre-line; /* This makes the \n breaks work! */
+}
+
+.custom-tooltip.show {
+    opacity: 1;
+}
